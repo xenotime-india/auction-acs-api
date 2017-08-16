@@ -1,36 +1,37 @@
 import mongoose, { Schema } from 'mongoose'
 
-const auctionItemSchema = new Schema({
-  url: {
-    type: String,
-    required: true
-  },
-  owner: {
+const transactionSchema = new Schema({
+  user: {
     type: Schema.ObjectId,
     ref: 'User',
     required: true,
     index: true
   },
-  basePrice: {
+  auctionItem: {
+    type: Schema.ObjectId,
+    ref: 'auction-item',
+    required: true,
+    index: true
+  },
+  bid: {
     type: Number,
-    required: true
+    required: true,
   },
   status: {
-    type: String,
-    required: true
+    type: String
   }
 }, {
   timestamps: true
 })
 
-auctionItemSchema.methods = {
+transactionSchema.methods = {
   view (full) {
     const view = {
       // simple view
       id: this.id,
-      url: this.url,
-      owner: this.owner,
-      basePrice: this.basePrice,
+      user: this.user.view(full),
+      auctionItem: this.auctionItem,
+      bid: this.bid,
       status: this.status,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
@@ -43,7 +44,7 @@ auctionItemSchema.methods = {
   }
 }
 
-const model = mongoose.model('AuctionItem', auctionItemSchema)
+const model = mongoose.model('Transaction', transactionSchema)
 
 export const schema = model.schema
 export default model
